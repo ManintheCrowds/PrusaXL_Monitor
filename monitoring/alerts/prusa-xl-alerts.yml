@@ -1,0 +1,15 @@
+# PURPOSE: Basic alert rules for Prusa XL error bursts.
+# DEPENDENCIES: Prometheus (or Grafana alerting configured to read rules)
+# MODIFICATION NOTES: v0.1 - Initial alert placeholders.
+
+groups:
+  - name: prusa_xl_alerts
+    rules:
+      - alert: PrusaXLErrorBurst
+        expr: prusa_xl_error_events_total_5m > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prusa XL error burst detected"
+          description: "More than 10 errors in 5 minutes. Verify printer state."

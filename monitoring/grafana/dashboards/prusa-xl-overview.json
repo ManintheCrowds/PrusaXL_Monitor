@@ -1,0 +1,87 @@
+{
+  "dashboard": {
+    "title": "Prusa XL Overview (POC)",
+    "tags": ["prusa", "3d-printing", "diagnostics"],
+    "timezone": "browser",
+    "schemaVersion": 27,
+    "version": 1,
+    "refresh": "30s",
+    "panels": [
+      {
+        "id": 1,
+        "title": "Error Count By Code (24h)",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT error_code, COUNT(*) AS error_count FROM prusa_xl_error_events WHERE event_time >= NOW() - INTERVAL '24 hours' GROUP BY error_code ORDER BY error_count DESC"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Nozzle And Bed Temperatures",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "format": "time_series",
+            "rawSql": "SELECT sample_time AS time, nozzle_temp_c AS value FROM prusa_xl_telemetry_samples WHERE $__timeFilter(sample_time) ORDER BY sample_time"
+          },
+          {
+            "refId": "B",
+            "format": "time_series",
+            "rawSql": "SELECT sample_time AS time, bed_temp_c AS value FROM prusa_xl_telemetry_samples WHERE $__timeFilter(sample_time) ORDER BY sample_time"
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Print Progress",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "format": "time_series",
+            "rawSql": "SELECT sample_time AS time, print_progress_pct AS value FROM prusa_xl_telemetry_samples WHERE $__timeFilter(sample_time) ORDER BY sample_time"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Errors Over Time",
+        "type": "timeseries",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "format": "time_series",
+            "rawSql": "SELECT date_trunc('minute', event_time) AS time, COUNT(*) AS value FROM prusa_xl_error_events WHERE $__timeFilter(event_time) GROUP BY time ORDER BY time"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Recent Errors",
+        "type": "table",
+        "gridPos": {"h": 8, "w": 24, "x": 0, "y": 16},
+        "datasource": "PostgreSQL",
+        "targets": [
+          {
+            "refId": "A",
+            "format": "table",
+            "rawSql": "SELECT event_time, error_code, error_message, severity FROM prusa_xl_error_events WHERE $__timeFilter(event_time) ORDER BY event_time DESC LIMIT 50"
+          }
+        ]
+      }
+    ]
+  }
+}

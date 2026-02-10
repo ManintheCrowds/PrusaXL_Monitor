@@ -1,0 +1,96 @@
+openapi: "3.0.3"
+info:
+  title: "Prusa XL Troubleshooting API"
+  version: "0.1.0"
+paths:
+  /api/troubleshoot:
+    post:
+      summary: "Lookup troubleshooting guidance"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TroubleshootRequest"
+      responses:
+        "200":
+          description: "Troubleshooting payload"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TroubleshootResponse"
+        "400":
+          description: "Validation error"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    TroubleshootRequest:
+      type: object
+      required:
+        - printer_id
+      properties:
+        printer_id:
+          type: string
+          minLength: 1
+        error_code:
+          type: string
+          nullable: true
+        symptom:
+          type: string
+          nullable: true
+    TroubleshootResponse:
+      type: object
+      properties:
+        printer_id:
+          type: string
+        recent_errors:
+          type: array
+          items:
+            $ref: "#/components/schemas/ErrorEvent"
+        kb_matches:
+          type: array
+          items:
+            $ref: "#/components/schemas/KnowledgeBaseEntry"
+    ErrorEvent:
+      type: object
+      properties:
+        error_code:
+          type: string
+        error_message:
+          type: string
+        severity:
+          type: string
+        subsystem:
+          type: string
+          nullable: true
+        event_time:
+          type: string
+          nullable: true
+    KnowledgeBaseEntry:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+          nullable: true
+        error_code:
+          type: string
+          nullable: true
+        symptoms:
+          type: string
+          nullable: true
+        guidance:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
