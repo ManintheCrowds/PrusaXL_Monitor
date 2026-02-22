@@ -14,6 +14,14 @@ from services.knowledge_base.storage import find_kb_by_error_code, find_kb_by_sy
 from services.troubleshoot.models import PrusaXLErrorEventRecord
 
 
+def _extract_help_url(event: PrusaXLErrorEventRecord) -> Optional[str]:
+    """Extract help.prusa3d.com URL from event raw_payload if present."""
+    payload = getattr(event, "raw_payload", None)
+    if isinstance(payload, dict) and payload.get("url"):
+        return str(payload["url"])
+    return None
+
+
 # PURPOSE: Fetch recent error events for a printer.
 # DEPENDENCIES: SQLAlchemy Session
 # MODIFICATION NOTES: v0.1 - Limit by count.
@@ -53,7 +61,8 @@ def build_troubleshoot_payload(
                 "error_message": e.error_message,
                 "severity": e.severity,
                 "subsystem": e.subsystem,
-                "event_time": e.event_time.isoformat() if e.event_time else None
+                "event_time": e.event_time.isoformat() if e.event_time else None,
+                "help_url": _extract_help_url(e),
             }
             for e in errors
         ],

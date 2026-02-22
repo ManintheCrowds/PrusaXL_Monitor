@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from sqlalchemy import Column, DateTime, String, Text
+from sqlalchemy import Column, DateTime, JSON, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -24,3 +24,4 @@ class PrusaXLErrorEventRecord(Base):
     severity = Column(String(32), nullable=False)
     subsystem = Column(String(64))
     event_time = Column(DateTime(timezone=True))
+    raw_payload = Column(JSON)  # JSON works on SQLite and PostgreSQL

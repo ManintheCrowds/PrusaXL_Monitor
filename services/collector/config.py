@@ -13,7 +13,7 @@ class PrusaXLCollectorConfig(BaseServiceConfig):
     """Configuration for Prusa XL collector POC."""
 
     printer_id: str = "prusa-xl-1"
-    source_type: str = "unknown"  # usb_serial, network_api, log_files, sd_gcode
+    source_type: str = "unknown"  # usb_serial, network_api, prusalink, log_files, sd_gcode
     base_url: Optional[str] = None
     payload_url: Optional[str] = None
     status_endpoint: Optional[str] = None
@@ -92,7 +92,9 @@ class PrusaXLCollectorConfig(BaseServiceConfig):
     # MODIFICATION NOTES: v0.1 - Require endpoint info for network source.
     @model_validator(mode="after")
     def validate_network_settings(self) -> "PrusaXLCollectorConfig":
-        """Validate network settings when source_type is network_api."""
+        """Validate network settings when source_type is network_api or prusalink."""
+        if self.source_type == "prusalink":
+            return self
         if self.source_type != "network_api":
             return self
 

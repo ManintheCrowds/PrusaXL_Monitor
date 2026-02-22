@@ -18,7 +18,17 @@ See [docs/prusa_xl_collector_poc.md](docs/prusa_xl_collector_poc.md) for collect
 pytest tests/ -v
 ```
 
+Run E2E only: `pytest tests/e2e/ -v -m e2e`  
+Smoke test: `python scripts/smoke_test.py`
+
 ## Documentation
 
-- [Collector POC](docs/prusa_xl_collector_poc.md) — data sources, network config, OctoPrint integration
+- [Collector POC](docs/prusa_xl_collector_poc.md) — data sources, PrusaLink, network config, OctoPrint integration
+- [OctoPrint XL quirks](docs/octoprint_xl_quirks.md) — known behaviors (absorbing heat, size warning)
 - [OpenAPI troubleshoot](docs/openapi_troubleshoot.yaml) — API spec
+
+## KB Seed (Prusa-Error-Codes)
+
+```bash
+FLASK_APP=app:create_app flask kb seed-error-codes
+```

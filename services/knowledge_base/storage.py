@@ -50,6 +50,16 @@ def find_kb_by_symptom(session: Session, symptom: str) -> List[KnowledgeBaseEntr
     )
 
 
+# PURPOSE: Delete KB entries by source.
+# DEPENDENCIES: sqlalchemy.orm.Session
+# MODIFICATION NOTES: v0.1 - For idempotent seed operations.
+def delete_kb_by_source(session: Session, source: str) -> int:
+    """Delete all KB entries with given source. Returns count deleted."""
+    deleted = session.query(KnowledgeBaseEntry).filter(KnowledgeBaseEntry.source == source).delete()
+    session.commit()
+    return deleted
+
+
 # PURPOSE: Get most recent KB entries.
 # DEPENDENCIES: sqlalchemy.orm.Session
 # MODIFICATION NOTES: v0.1 - Limit recent results.

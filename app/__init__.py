@@ -6,14 +6,22 @@
 
 from __future__ import annotations
 
+import os
+
 from flask import Flask
 from flask_caching import Cache
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 from app.api.troubleshoot import troubleshoot_bp
+from app.cli import register_cli
 
-cache = Cache(config={"CACHE_TYPE": "RedisCache", "CACHE_REDIS_URL": "redis://redis:6379/0"})
+_cache_config = (
+    {"CACHE_TYPE": "NullCache"}
+    if os.getenv("TESTING") == "1"
+    else {"CACHE_TYPE": "RedisCache", "CACHE_REDIS_URL": "redis://redis:6379/0"}
+)
+cache = Cache(config=_cache_config)
 limiter = Limiter(get_remote_address, default_limits=["60 per minute"])
 
 
@@ -26,4 +34,5 @@ def create_app() -> Flask:
     cache.init_app(app)
     limiter.init_app(app)
     app.register_blueprint(troubleshoot_bp, url_prefix="/api")
+    register_cli(app)
     return app

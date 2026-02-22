@@ -14,6 +14,9 @@ from services.collector.network_client import PrusaXLNetworkCollector
 from services.collector.prusa_xl_adapter import PrusaXLAdapter, PrusaXLErrorEvent
 from services.octoprint.client import OctoPrintClient
 from services.octoprint.adapter import OctoPrintAdapter
+from services.prusalink.client import PrusaLinkClient
+from services.prusalink.adapter import PrusaLinkAdapter
+from services.prusalink.config import PrusaLinkConfig
 
 
 class PrusaXLCollectorService:
@@ -28,6 +31,9 @@ class PrusaXLCollectorService:
         self.adapter = PrusaXLAdapter(self.config)
         self.octoprint = OctoPrintClient()
         self.octo_adapter = OctoPrintAdapter()
+        self.prusalink_config = PrusaLinkConfig()
+        self.prusalink = PrusaLinkClient(self.prusalink_config)
+        self.prusalink_adapter = PrusaLinkAdapter(self.prusalink_config)
 
     # PURPOSE: Collect and normalize API payload.
     # DEPENDENCIES: PrusaXLNetworkCollector, PrusaXLAdapter
@@ -37,6 +43,35 @@ class PrusaXLCollectorService:
         payload = await self.network.fetch_payload()
         normalized = self.adapter.normalize_payload(payload, source="network_api")
         return normalized.model_dump()
+
+    # PURPOSE: Collect and normalize PrusaLink payload.
+    # DEPENDENCIES: PrusaLinkClient, PrusaLinkAdapter
+    # MODIFICATION NOTES: v0.1 - PrusaLink native API support.
+    async def collect_prusalink_payload(self) -> Dict[str, Any]:
+        """Collect and normalize PrusaLink payload from /api/v1/status, /api/v1/job, /api/v1/info."""
+        if not self.prusalink_config.base_url:
+            return {"source": "prusalink", "error": "PRUSALINK_BASE_URL not configured", "telemetry": None, "errors": []}
+        try:
+            status = await self.prusalink.get_status()
+            job = status.get("job")
+            info = None
+            try:
+                info = await self.prusalink.get_info()
+            except Exception:
+                pass
+            normalized = self.prusalink_adapter.normalize_payload(status=status, job=job, info=info)
+            return normalized.model_dump()
+        except Exception as e:
+            from services.prusalink.client import PrusaLinkError
+            http_error = {}
+            if isinstance(e, PrusaLinkError):
+                http_error = {"code": e.code, "title": e.message, "url": e.url}
+            else:
+                http_error = {"code": "unknown", "title": str(e), "url": None}
+            normalized = self.prusalink_adapter.normalize_payload(
+                status={}, job={}, http_error=http_error
+            )
+            return normalized.model_dump()
 
     # PURPOSE: Collect and normalize OctoPrint payload.
     # DEPENDENCIES: OctoPrintClient, OctoPrintAdapter

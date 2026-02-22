@@ -38,16 +38,23 @@ class OctoPrintAdapter:
 
     # PURPOSE: Build telemetry object from printer/job payloads.
     # DEPENDENCIES: datetime
-    # MODIFICATION NOTES: v0.1 - Map common OctoPrint fields.
+    # MODIFICATION NOTES: v0.1 - Map common OctoPrint fields; v0.2 - Multi-tool (Prusa XL).
     def _build_telemetry(self, printer: Dict[str, Any], job: Dict[str, Any]) -> Dict[str, Any]:
-        """Build telemetry dict from OctoPrint payloads."""
+        """Build telemetry dict from OctoPrint payloads. Supports multi-tool (tool0..tool4)."""
         temps = (printer or {}).get("temperature", {})
-        tool = temps.get("tool0", {})
         bed = temps.get("bed", {})
         progress = (job or {}).get("progress", {})
+        tool_temps: Dict[str, float] = {}
+        for key, val in (temps or {}).items():
+            if key.startswith("tool") and isinstance(val, dict) and "actual" in val:
+                tool_temps[key] = val["actual"]
+        tool0 = temps.get("tool0", {})
+        nozzle_temp_c = tool0.get("actual") if tool0 else (list(tool_temps.values())[0] if tool_temps else None)
         return {
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "nozzle_temp_c": tool.get("actual"),
+            "nozzle_temp_c": nozzle_temp_c,
+            "tool_temps": tool_temps if tool_temps else None,
+            "nozzle_temps_c": list(tool_temps.values()) if tool_temps else None,
             "bed_temp_c": bed.get("actual"),
             "print_progress_pct": progress.get("completion"),
             "print_state": (printer or {}).get("state", {}).get("text"),

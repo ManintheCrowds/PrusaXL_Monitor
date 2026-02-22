@@ -14,7 +14,8 @@ import httpx
 from services.knowledge_base.models import KnowledgeBaseEntry
 from services.knowledge_base.storage import build_kb_entry
 
-ERROR_CODE_PATTERN = re.compile(r"\bE\d{3,5}\b")
+# Prusa XXYZZ format: 17 = XL, XX = any printer. See Prusa-Error-Codes README.
+ERROR_CODE_PATTERN = re.compile(r"\b(17\d{3}|(?:04|10|12|13|16|17|21|23|26|27|28|29|31)\d{3})\b")
 
 
 # PURPOSE: Fetch forum page content.

@@ -8,6 +8,7 @@ PostgreSQL and Grafana.
 ## Relevant Prusa3D Repos
 - https://github.com/prusa3d/Prusa-Firmware-Buddy (XL firmware stack)
 - https://github.com/prusa3d/Prusa-Error-Codes (error taxonomy)
+- https://github.com/prusa3d/Prusa-Link-Web (PrusaLink API spec)
 - https://github.com/prusa3d/PrusaSlicer (job metadata, profiles, G-code context)
 
 ## Data Sources And Access Paths
@@ -19,6 +20,23 @@ Confirmed: network access over WiFi. The collector supports:
 
 Log path (manual export or mounted USB):
 - `PRUSA_XL_LOG_PATH=/path/to/logs`
+
+### PrusaLink (Primary Option)
+PrusaLink is the native web interface on the Prusa XL. Use the PrusaLink client for direct API access.
+
+Env vars:
+- `PRUSALINK_BASE_URL=http://prusa-xl.local` (or printer IP/hostname)
+- `PRUSALINK_USERNAME=<username>` (from PrusaLink Settings)
+- `PRUSALINK_PASSWORD=<password>`
+- `PRUSALINK_PRINTER_ID=prusa-xl-1` (optional)
+- `PRUSALINK_TIMEOUT_SECONDS=10` (optional)
+
+Endpoints used:
+- `/api/v1/status` (printer, job, transfer, storage, camera)
+- `/api/v1/job` (current job)
+- `/api/v1/info` (printer info)
+
+Auth: Digest (required by PrusaLink). See [Prusa-Link-Web OpenAPI](https://github.com/prusa3d/Prusa-Link-Web/blob/master/spec/openapi.yaml).
 
 ### Network Collector Configuration
 Use one of these patterns:
@@ -48,7 +66,7 @@ Auth options:
   - `PRUSA_XL_BEARER_TOKEN=your_token`
 
 ## OctoPrint Integration (Option D)
-OctoPrint provides a richer API with job/log access.
+OctoPrint provides a richer API with job/log access. See [octoprint_xl_quirks.md](octoprint_xl_quirks.md) for known Prusa XL behaviors (absorbing heat, size warning, firmware).
 
 Env vars:
 - `OCTOPRINT_BASE_URL=http://octoprint:5000`
