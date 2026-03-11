@@ -1,0 +1,11 @@
+# PrusaXL_Monitor dependencies
+flask>=3.0
+flask-caching>=2.0
+flask-limiter>=3.5
+sqlalchemy>=2.0
+pydantic>=2.0
+click>=8.0
+httpx>=0.25
+alembic>=1.12
+psycopg2-binary>=2.9
+pytest>=7.0
