@@ -27,6 +27,15 @@ See [docs/prusa_xl_collector_poc.md](docs/prusa_xl_collector_poc.md) for collect
 pytest tests/ -v
 ```
 
+**CI** ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)) runs the same suite plus the smoke script:
+
+```bash
+python -m pytest tests/ -v --tb=short
+python scripts/smoke_test.py
+```
+
+(Run from repo root; tests use in-memory SQLite via [`tests/conftest.py`](tests/conftest.py)—no Postgres required in CI.)
+
 Run E2E only: `pytest tests/e2e/ -v -m e2e`  
 Smoke test: `python scripts/smoke_test.py`
 
