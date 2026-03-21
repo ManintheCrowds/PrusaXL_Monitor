@@ -1,8 +1,17 @@
-# PrusaXL_Monitor
+# PrusaXL_Monitor — Observability and remediation for Prusa XL 3D printing
 
-Seeking to identify, monitor and suggest fixes on Prusa XL 3d Printing.
+Identify, monitor, and suggest fixes for Prusa XL print issues. Flask API, PrusaLink/OctoPrint collectors, PostgreSQL, optional Redis/Grafana.
 
 **Python 3.10+** | Flask, SQLAlchemy, PostgreSQL, Alembic, Redis (optional), Flask-Limiter, Flask-Caching
+
+## Key Concepts
+
+| Concept | Description |
+|---------|-------------|
+| **Observability** | Collect print state, errors, and telemetry from PrusaLink and OctoPrint |
+| **Collector** | Read-only data collection from Prusa XL via PrusaLink API and OctoPrint |
+| **Knowledge-base seed** | Prusa error codes and troubleshooting patterns stored in PostgreSQL |
+| **Troubleshoot pipeline** | Analyze collected data, match against KB, suggest remediation steps |
 
 ## Quick start
 
