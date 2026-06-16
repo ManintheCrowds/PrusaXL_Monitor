@@ -66,4 +66,6 @@ FLASK_APP=app:create_app flask kb seed-error-codes
 
 [MIT](LICENSE)
 
+Security: see [SECURITY.md](SECURITY.md).
+
 *Built by a programmer who ships. See [portfolio-harness/docs/AUTHOR.md](../portfolio-harness/docs/AUTHOR.md) if viewing from sibling workspace.*
