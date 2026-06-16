@@ -62,4 +62,8 @@ Smoke test: `python scripts/smoke_test.py`
 FLASK_APP=app:create_app flask kb seed-error-codes
 ```
 
+## License
+
+[MIT](LICENSE)
+
 *Built by a programmer who ships. See [portfolio-harness/docs/AUTHOR.md](../portfolio-harness/docs/AUTHOR.md) if viewing from sibling workspace.*
